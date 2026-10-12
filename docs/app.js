@@ -5,7 +5,7 @@ const pill=b=>`<span class="pill ${b}">${b}</span>`;
 function mk(id,cfg){CH[id]&&CH[id].destroy();cfg.options=Object.assign({responsive:true,maintainAspectRatio:false},cfg.options||{});CH[id]=new Chart($("#"+id),cfg)}
 const tbl=(h,r)=>`<table><tr>${h.map(x=>`<th>${x}</th>`).join("")}</tr>${r.map(a=>`<tr>${a.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table>`;
 const kp=(v,l,c="")=>`<div class="card k ${c}"><b>${v}</b><span>${l}</span></div>`;
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x==b));document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!=="t-"+b.dataset.t)});
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{document.querySelectorAll("nav button").forEach(x=>x.classList.toggle("on",x==b));document.querySelectorAll("main section").forEach(s=>s.hidden=s.id!=="t-"+b.dataset.t);if(b.dataset.t==="net")drawNet()});
 function scoreAll(){return T.rows.map(r=>{const s=score(r.slice(1));return{r,s,b:band(s)}})}
 function overview(){const S=scoreAll(),n={High:0,Medium:0,Low:0};S.forEach(o=>n[o.b]++);const h=D.bands[0];
 $("#kpi").innerHTML=kp("5,092","labelled hospitals")+kp("99 (1.94%)","fraud cases","r")+kp(D.oof_auc,"honest AUC (out-of-fold)","g")+kp(h.fraud_pct+"%","fraud rate in High band")+kp(h.pct_of_all_fraud+"%","of all fraud in top 5%")+kp(n.High,"test hospitals in High band","r");
@@ -40,11 +40,13 @@ xs.onclick=e=>{if(e.target.dataset.j){xs.querySelectorAll("button").forEach(b=>b
 const top=R.map((r,i)=>[r.s.reduce((a,b)=>a+b,0),i]).sort((a,b)=>b[0]-a[0]).slice(0,15).map(a=>a[1]);$("#xh").innerHTML=top.map(i=>`<option value="${i}">Hospital ${R[i].id}${R[i].y?" (labelled fraud)":""}</option>`).join("");
 const wf=()=>{const r=R[+$("#xh").value];let c=X.base;const L=["Base value"],B=[[0,c]],K=["#9AA7B8"];r.s.forEach((s,j)=>{L.push(NM[j]+" = "+r.x[j]);B.push([c,c+s]);K.push(s>=0?"#D1344B":"#1F9A62");c+=s});L.push("Final output");B.push([0,c]);K.push("#1E4D8C");
 mk("x4",{type:"bar",data:{labels:L,datasets:[{data:B,backgroundColor:K}]},options:{indexAxis:"y",plugins:{legend:{display:false}}}});$("#xt").textContent=`Starts at the average output ${X.base.toFixed(2)} and adds each feature's push. Final model output: ${c.toFixed(2)}.`};$("#xh").onchange=wf;wf()}
-function net(N){const s=N.stats;$("#nk").innerHTML=kp(s.nodes,"hospitals in graph")+kp(s.edges,"links")+kp(s.density,"density")+kp(s.communities,"communities")+kp(s.fraud_nb_pct+"%","neighbours of fraud hospitals that are fraud","r")+kp(s.base_pct+"%","overall fraud rate (baseline)");
-const cv=$("#ng"),dp=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dp;cv.height=h*dp;const g=cv.getContext("2d");g.scale(dp,dp);const P=N.nodes,xs=P.map(p=>p.x),ys=P.map(p=>p.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),X=v=>20+(v-x0)/(x1-x0)*(w-40),Y=v=>20+(v-y0)/(y1-y0)*(h-40);
+let NW=null;
+function drawNet(){const N=NW;if(!N)return;const cv=$("#ng"),dp=devicePixelRatio||1,w=cv.clientWidth,h=cv.clientHeight;cv.width=w*dp;cv.height=h*dp;const g=cv.getContext("2d");g.scale(dp,dp);const P=N.nodes,xs=P.map(p=>p.x),ys=P.map(p=>p.y),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys),X=v=>20+(v-x0)/(x1-x0)*(w-40),Y=v=>20+(v-y0)/(y1-y0)*(h-40);
 g.strokeStyle="rgba(120,130,150,.25)";N.edges.forEach(([a,b])=>{g.beginPath();g.moveTo(X(P[a].x),Y(P[a].y));g.lineTo(X(P[b].x),Y(P[b].y));g.stroke()});
 P.slice().sort((a,b)=>a.f-b.f).forEach(p=>{g.fillStyle=p.f?"#D1344B":"#2F5D9E";g.globalAlpha=.9;g.beginPath();g.arc(X(p.x),Y(p.y),3+Math.min(p.deg,12)*.5,0,7);g.fill()});
-$("#nt").innerHTML=tbl(["Hospital id","Links","Betweenness","Fraud"],N.top.map(t=>[t.id,t.deg,t.bet,t.f?pill("High").replace("High","Fraud"):"No"]));
+}
+function net(N){const s=N.stats;$("#nk").innerHTML=kp(s.nodes,"hospitals in graph")+kp(s.edges,"links")+kp(s.density,"density")+kp(s.communities,"communities")+kp(s.fraud_nb_pct+"%","neighbours of fraud hospitals that are fraud","r")+kp(s.base_pct+"%","overall fraud rate (baseline)");
+NW=N;$("#nt").innerHTML=tbl(["Hospital id","Links","Betweenness","Fraud"],N.top.map(t=>[t.id,t.deg,t.bet,t.f?'<span class="pill High">Fraud</span>':"No"]));
 $("#nn").innerHTML=`<b>Reading this.</b> Across all 5,092 hospitals, a fraud hospital's 5 nearest neighbours are fraud ${s.fraud_nb_pct}% of the time, against ${s.base_pct}% overall (${(s.fraud_nb_pct/s.base_pct).toFixed(0)} times higher). Fraud hospitals do resemble each other, which is why the model can rank them, but they also sit among many similar clean hospitals, so no isolated fraud cluster exists. The thesis network (cosine similarity, 0.98 threshold) was almost fully connected, with density 0.999.`}
 let tm=null,q=[],n={s:0,H:0,M:0},sc=[];
 function lk(){$("#lk").innerHTML=kp(n.s,"hospitals scored")+kp(n.H,"fraud alerts (High)","r")+kp(n.M,"on watch (Medium)")+kp(n.s?(100*n.H/n.s).toFixed(1)+"%":"–","alert rate")}
@@ -62,3 +64,5 @@ const R=[];let bad=0;L.forEach(l=>{const v=k.map(i=>parseFloat(l[i]));if(v.slice
 $("#bo").innerHTML=`<div class="al" style="background:var(${H?"--hi":"--lo"})">${H} fraud alert${H==1?"":"s"}, ${M} on watch, of ${R.length} scored${bad?`, ${bad} skipped`:""}</div>`+tbl(["id","Tenders","Std","Median","Mean","Skew","Score","Band"],R.slice(0,50).map(r=>[esc(r[0]),r[1],r[2],r[3],r[4],r[5],r[6].toFixed(3),pill(r[7])]))}
 Promise.all(["data.json","eda.json","test_scored.json","xai.json","network.json"].map(u=>fetch(u).then(r=>r.json()))).then(([d,e,t,x,n])=>{D=d;E=e;T=t;overview();xai(x);net(n);eda();model();live();document.querySelectorAll("input[type=number]").forEach(i=>i.oninput=upd);upd();
 $("#go").onclick=()=>batch($("#ta").value);$("#f").onchange=e=>{const f=e.target.files[0];f&&f.text().then(x=>{$("#ta").value=x.split(/\r?\n/).slice(0,3).join("\n")+"\n...";batch(x)})}}).catch(()=>{$("#err").hidden=false});
+
+addEventListener("resize",()=>{if(!$("#t-net").hidden)drawNet()});
