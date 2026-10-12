@@ -13,7 +13,10 @@ mk("c1",{type:"doughnut",data:{labels:Object.keys(n).map(k=>`${k} (${n[k]})`),da
 const sh=Object.entries(D.shap_rf).sort((a,b)=>b[1]-a[1]);mk("c2",{type:"bar",data:{labels:sh.map(x=>x[0]),datasets:[{data:sh.map(x=>x[1]),backgroundColor:"#5B4BD6"}]},options:{indexAxis:"y",plugins:{legend:{display:false}}}});
 mk("c3",{type:"bar",data:{labels:D.bands.map(b=>b.band),datasets:[{data:D.bands.map(b=>b.fraud_pct),backgroundColor:D.bands.map(b=>COL[b.band])}]},options:{plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:"% labelled fraud"}}}}});
 $("#q").innerHTML=tbl(["Rank","Hospital id","Tenders","Std","Score","Band"],S.sort((a,b)=>b.s-a.s).slice(0,10).map((o,i)=>[i+1,o.r[0],o.r[1],o.r[2],o.s.toFixed(3),pill(o.b)]));
-$("#nbA").textContent=D.oof_auc}
+$("#nbA").textContent=D.oof_auc;$("#nbR").textContent=h.pct_of_all_fraud+"%";$("#nbP").textContent=h.fraud_pct+"%";
+const tp=S.slice(0,4);$("#oa").innerHTML=tp.map(o=>`<div>${pill("High")} Hospital ${o.r[0]} exceeds the High-risk cutoff (${D.cutoffs.high.toFixed(2)})<span class="t">score ${o.s.toFixed(3)}</span></div>`).join("")+`<div>${n.Medium} test hospitals on watch (Medium band)</div>`;
+$("#op").innerHTML=tbl(["Priority","Hospital","Tenders","Std","Score","Band"],tp.map((o,i)=>[`<b>P${i+1}</b>`,o.r[0],o.r[1],o.r[2],o.s.toFixed(3),pill(o.b)]));
+document.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>document.querySelector(`nav button[data-t="${b.dataset.go}"]`).click())}
 function eda(){const f=$("#fs");f.innerHTML=FE.map((c,i)=>`<button data-c="${c}" class="${i?"":"on"}">${NM[i]}</button>`).join("");
 const q=c=>{const d=E.quint[c];mk("e1",{type:"bar",data:{labels:d.labels,datasets:[{data:d.fraud_pct,backgroundColor:"#D1344B"}]},options:{plugins:{legend:{display:false}},scales:{y:{title:{display:true,text:"% fraud"}},x:{title:{display:true,text:NM[FE.indexOf(c)]+" quintile range"}}}}})};
 f.onclick=e=>{if(e.target.dataset.c){f.querySelectorAll("button").forEach(b=>b.classList.toggle("on",b==e.target));q(e.target.dataset.c)}};q("obs_count");
