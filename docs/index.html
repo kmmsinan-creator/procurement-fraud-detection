@@ -3,7 +3,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"><link rel="stylesheet" href="style.css"></head><body>
 <nav><h1>Procurement Fraud<small>Risk Monitoring Dashboard</small></h1>
 <button data-t="ov" class="on">Overview</button><button data-t="eda">EDA</button><button data-t="mod">Model Results</button><button data-t="xai">Explainability (XAI)</button><button data-t="net">Network</button><button data-t="live">Live Monitor</button><button data-t="chk">Check Hospitals</button>
-<div class="nb">Honest AUC<b id="nbA">–</b>out-of-fold, no leakage</div></nav>
+<div class="nb"><small>DEPLOYED MODEL</small><strong>Logistic regression</strong><small>5 features, SMOTE in-fold</small><span>Honest AUC</span><b id="nbA">–</b><span>Recall in top 5%</span><b id="nbR">–</b><span>Precision in top 5%</span><b id="nbP">–</b></div></nav>
 <main><div id="err" class="note" hidden>Could not load the data files. Open this from GitHub Pages or a local web server.</div>
 <section id="t-ov"><h2>Hospital Tender Fraud Risk Monitoring</h2><p class="mu sm">Kaggle Hospital Tenders data, 2012 to 2018. Master's thesis project rebuilt with SQL, Python and GitHub.</p>
 <div class="grid kpi" id="kpi"></div><div class="grid">
@@ -11,6 +11,8 @@
 <div class="card"><h3>Top fraud drivers (Random Forest SHAP)</h3><div class="cv"><canvas id="c2"></canvas></div></div>
 <div class="card"><h3>Fraud rate by band (training, out-of-fold)</h3><div class="cv"><canvas id="c3"></canvas></div></div>
 <div class="card"><h3>Highest-risk test hospitals</h3><div class="tb" id="q"></div></div></div>
+<div class="grid"><div class="card"><h3>Alerts and notifications</h3><div class="feed" id="oa"></div></div><div class="card"><h3>Audit prioritization (recommended queue)</h3><div class="tb" id="op"></div></div>
+<div class="card"><h3>Quick actions</h3><div class="qa"><button data-go="chk">Check a hospital<small>Score one hospital</small></button><button data-go="live">Live monitor<small>Replay incoming tenders</small></button><button data-go="xai">Model insights<small>SHAP explanations</small></button><button data-go="net">Network<small>Similar hospitals</small></button></div></div></div>
 <div class="note"><b>What this is not.</b> The data has five summary statistics per hospital: no dates, suppliers or tender descriptions. Test labels are hidden, so test-set alerts cannot be verified. A High band is a reason to review, not proof of fraud.</div></section>
 
 <section id="t-eda" hidden><h2>Exploratory data analysis</h2><p class="mu sm">5,092 labelled hospitals, 99 fraud (1.94%), no missing values or duplicate ids.</p>
