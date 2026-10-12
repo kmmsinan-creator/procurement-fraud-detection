@@ -1,32 +1,7 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Hospital tender fraud risk | Procurement fraud detection</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<style>
-:root{--bg:#F2F4F7;--sf:#fff;--ink:#0F1B2D;--mu:#566274;--ln:#D5DAE1;--ac:#1E4D8C;--hi:#D1344B;--md:#C27A10;--lo:#1F7A5A}
-@media(prefers-color-scheme:dark){:root{--bg:#101722;--sf:#172131;--ink:#E8EDF4;--mu:#9AA7B8;--ln:#2B3849;--ac:#8DB4EE;--hi:#FF6B80;--md:#E8A83A;--lo:#59C29B}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "IBM Plex Sans",system-ui,sans-serif}
-.w{max-width:1000px;margin:0 auto;padding:0 20px 50px}
-h1,h2,h3{font-family:"Source Serif 4",Georgia,serif;line-height:1.15;margin:0}
-h1{font-size:clamp(1.9rem,4.5vw,2.9rem);padding:40px 0 8px;max-width:21ch}h2{font-size:1.45rem;margin:0 0 8px}h3{font-size:1.05rem;margin-bottom:4px}
-p{margin:.4rem 0;max-width:70ch}.mu{color:var(--mu)}.sm{font-size:.88rem}
-section{margin-top:22px}.g{display:grid;gap:18px;grid-template-columns:1fr}@media(min-width:860px){.g{grid-template-columns:1fr 1fr}}
-.pane{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:18px}
-.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:14px 0}
-.kv div{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:12px}.kv b{display:block;font:700 1.7rem "Source Serif 4",Georgia,serif}
-label{display:grid;grid-template-columns:1fr 120px;gap:10px;align-items:center;margin:8px 0;font-size:.93rem}
-input{font:inherit;padding:7px 8px;border:1px solid var(--ln);border-radius:6px;background:var(--bg);color:var(--ink);width:100%}
-.big{font:700 2.4rem "Source Serif 4",Georgia,serif}.badge{display:inline-block;padding:4px 14px;border-radius:999px;color:#fff;font-weight:600;margin-left:10px;vertical-align:middle}
-.ct{display:grid;grid-template-columns:90px 1fr 56px;gap:8px;align-items:center;font-size:.85rem;margin:5px 0}
-.tr{position:relative;height:14px;background:var(--bg);border-radius:3px}.tr i{position:absolute;top:0;height:100%}.tr:after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;border-left:1px solid var(--mu)}
-.tb{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.88rem;font-variant-numeric:tabular-nums}th,td{text-align:right;padding:6px 9px;border-bottom:1px solid var(--ln);white-space:nowrap}th:first-child,td:first-child{text-align:left}
-.hi{color:var(--hi)}.md{color:var(--md)}.lo{color:var(--lo)}b.s{font-weight:600}
-.note{border-left:4px solid var(--md);background:var(--sf);padding:10px 14px;border-radius:0 8px 8px 0;margin-top:14px}
-.bar{display:grid;grid-template-columns:90px 1fr 50px;gap:8px;align-items:center;font-size:.88rem;margin:5px 0}.bar i{display:block;height:14px;background:var(--ac);border-radius:3px}
-textarea{width:100%;height:80px;font:12px monospace;background:var(--bg);color:var(--ink);border:1px solid var(--ln);border-radius:6px;padding:8px}
-.al{margin-top:10px;padding:10px 14px;border-radius:8px;font-weight:600;color:#fff}.al small{display:block;font-weight:400;opacity:.95}
-button.act{font:inherit;padding:8px 16px;border-radius:999px;border:1px solid var(--ac);background:var(--ac);color:var(--bg);cursor:pointer}
-a{color:var(--ac)}footer{margin-top:30px;color:var(--mu);font-size:.85rem}
-</style></head><body><div class="w">
+<link rel="stylesheet" href="style.css"></head><body><div class="w">
 <h1>Can five tender statistics flag fraud risk in hospitals?</h1>
 <p class="mu">Master's thesis project, HSE University (2026), rebuilt with SQL, Python and GitHub. Data: Kaggle Hospital Tenders, 5,092 labelled hospitals, 99 fraud cases (1.9%). <a href="https://github.com/kmmsinan-creator/procurement-fraud-detection">Source code</a></p>
 <div id="err" class="note sm" hidden>Could not load data.json. Open this page from GitHub Pages (or a local web server), not by double-clicking the file.</div>
@@ -49,29 +24,4 @@ a{color:var(--ac)}footer{margin-top:30px;color:var(--mu);font-size:.85rem}
 <section class="pane"><h2>Highest-risk hospitals in the test set</h2><p class="sm mu">The test labels are hidden, so this ranking cannot be verified. Scores near 1.0 are saturated; use the band, not the decimals.</p><div class="tb" id="top"></div></section>
 <div class="note sm"><b>Limits.</b> Five summary statistics, no dates or suppliers, and only 99 fraud cases, so model differences of about 0.01 AUC are noise. A High band means about ten times the average fraud rate, and most High hospitals are still not labelled fraud. It is a reason to review, not proof.</div>
 <footer>Page built from docs/data.json, produced by the notebook pipeline in this repository.</footer></div>
-<script>
-const $=s=>document.querySelector(s),N=["Tender count","Std. dev.","Median","Mean","Skewness"];let D;
-const cls=b=>b==="High"?"hi":b==="Medium"?"md":"lo",esc=v=>String(v).replace(/[&<>]/g,"");
-const sig=z=>1/(1+Math.exp(-z)),band=s=>s>=D.cutoffs.high?"High":s>=D.cutoffs.medium?"Medium":"Low";
-function upd(){const v=[0,1,2,3,4].map(i=>parseFloat($("#i"+i).value));
-if(v.some(isNaN)||v.slice(0,4).some(a=>a<=0)){$("#sc").textContent="–";$("#bd").textContent="Check inputs";$("#bd").style.background="var(--mu)";$("#ct").innerHTML="";$("#al").innerHTML="";return}
-const c=D.weights.map((w,i)=>w*(v[i]-D.feature_info[D.features[i]].mean)),z=D.bias+D.weights.reduce((a,w,i)=>a+w*v[i],0),s=sig(z),b=band(s),r=D.bands.find(x=>x.band===b);
-$("#sc").textContent=s.toFixed(3);$("#bd").textContent=b+" band";$("#bd").style.background=`var(--${cls(b)})`;
-$("#ex").textContent=`Risk score from 0 to 1. In the training data, ${r.fraud_pct}% of hospitals in the ${b} band were labelled fraud, against ${(D.base_rate*100).toFixed(1)}% overall.`;
-$("#al").innerHTML=b==="High"?'<div class="al" style="background:var(--hi)">FRAUD ALERT: high risk<small>Top 5% of risk scores. Refer this hospital for audit review.</small></div>':b==="Medium"?'<div class="al" style="background:var(--md)">WATCH: medium risk<small>Review if capacity allows.</small></div>':"";
-const m=Math.max(1.5,...c.map(Math.abs));$("#ct").innerHTML=c.map((a,i)=>`<div class="ct"><span>${N[i]}</span><div class="tr"><i style="${a>=0?"left:50%":"right:50%"};width:${Math.abs(a)/m*50}%;background:var(${a>=0?"--hi":"--lo"})"></i></div><span>${a>=0?"+":""}${a.toFixed(2)}</span></div>`).join("")}
-function batch(t){const L=t.trim().split(/\r?\n/).map(l=>l.split(","));const h=L.shift().map(x=>x.trim().toLowerCase());const k=["id","obs_count","std","median","mean","skew"].map(n=>h.indexOf(n));
-if(k.some(i=>i<0)){$("#bo").innerHTML='<p class="sm">Missing columns. Expected: id, obs_count, std, median, mean, skew.</p>';return}
-const R=[];let bad=0;L.forEach(l=>{const v=k.map(i=>parseFloat(l[i]));if(v.slice(1,5).some(a=>!(a>0))||isNaN(v[5])){bad++;return}const x=v.slice(1),s=sig(D.bias+D.weights.reduce((a,w,i)=>a+w*x[i],0));R.push([l[k[0]],...x,s,band(s)])});
-R.sort((a,b)=>b[6]-a[6]);const H=R.filter(r=>r[7]==="High"),M=R.filter(r=>r[7]==="Medium").length;
-$("#bo").innerHTML=`<div class="al" style="background:var(--${H.length?"hi":"lo"})">${H.length} FRAUD ALERT${H.length==1?"":"S"} (high risk), ${M} on watch, out of ${R.length} hospitals scored${bad?`, ${bad} rows skipped`:""}</div>`+tbl(["id","Tenders","Std","Median","Mean","Skew","Score","Band"],R.slice(0,50).map(r=>[esc(r[0]),r[1],r[2],r[3],r[4],r[5],r[6].toFixed(3),`<b class="s ${cls(r[7])}">${r[7]}</b>`]))+'<p class="sm mu">Showing the 50 highest scores.</p>'}
-function tbl(h,rows){return`<table><tr>${h.map(x=>`<th>${x}</th>`).join("")}</tr>${rows.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table>`}
-fetch("data.json").then(r=>r.json()).then(d=>{D=d;
-$("#kv").innerHTML=`<div><b>${d.oof_auc}</b>honest AUC (out-of-fold)</div><div><b>${(d.base_rate*100).toFixed(1)}%</b>fraud rate overall</div><div><b>${d.bands[0].fraud_pct}%</b>fraud rate in High band</div><div><b>${d.bands[0].pct_of_all_fraud}%</b>of all fraud in top 5% of hospitals</div>`;
-$("#bands").innerHTML=tbl(["Band","Hospitals","Fraud cases","Fraud rate","Share of all fraud"],d.bands.map(b=>[`<b class="s ${cls(b.band)}">${esc(b.band)}</b>`,b.hospitals,b.fraud_cases,b.fraud_pct+"%",b.pct_of_all_fraud+"%"]));
-const k=Object.keys(d.thesis_vs_honest[0]);$("#cmp").innerHTML=tbl(["Model","Thesis","3 features","5 features"],d.thesis_vs_honest.map(r=>[esc(r[k[0]]),r[k[1]],r[k[2]],r[k[3]]]));
-const e=Object.entries(d.shap_rf).sort((a,b)=>b[1]-a[1]),mx=e[0][1];$("#shap").innerHTML=e.map(([n,x])=>`<div class="bar"><span>${esc(n)}</span><div><i style="width:${x/mx*100}%"></i></div><span>${x}</span></div>`).join("");
-$("#top").innerHTML=tbl(["id","Tenders","Std","Median","Mean","Skew","Score","Band"],d.top_test.map(r=>[r.id,r.obs_count,r.std,r.median,r.mean,r.skew,r.score,`<b class="s ${cls(r.band)}">${esc(r.band)}</b>`]));
-document.querySelectorAll("input[type=number]").forEach(i=>i.oninput=upd);upd();
-$("#go").onclick=()=>batch($("#ta").value);$("#f").onchange=e=>{const f=e.target.files[0];if(f)f.text().then(t=>{$("#ta").value=t.split(/\r?\n/).slice(0,3).join("\n")+"\n...";batch(t)})}}).catch(()=>{$("#err").hidden=false});
-</script></body></html>
+<script src="app.js"></script></body></html>
