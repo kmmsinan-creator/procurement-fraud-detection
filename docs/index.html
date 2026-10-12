@@ -1,27 +1,46 @@
 <!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hospital tender fraud risk | Procurement fraud detection</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="style.css"></head><body><div class="w">
-<h1>Can five tender statistics flag fraud risk in hospitals?</h1>
-<p class="mu">Master's thesis project, HSE University (2026), rebuilt with SQL, Python and GitHub. Data: Kaggle Hospital Tenders, 5,092 labelled hospitals, 99 fraud cases (1.9%). <a href="https://github.com/kmmsinan-creator/procurement-fraud-detection">Source code</a></p>
-<div id="err" class="note sm" hidden>Could not load data.json. Open this page from GitHub Pages (or a local web server), not by double-clicking the file.</div>
-<div class="kv" id="kv"></div>
+<title>Hospital Tender Fraud Risk Monitoring</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"><link rel="stylesheet" href="style.css"></head><body>
+<nav><h1>Procurement Fraud<small>Risk Monitoring Dashboard</small></h1>
+<button data-t="ov" class="on">Overview</button><button data-t="eda">EDA</button><button data-t="mod">Model Results</button><button data-t="xai">Explainability (XAI)</button><button data-t="net">Network</button><button data-t="live">Live Monitor</button><button data-t="chk">Check Hospitals</button>
+<div class="nb">Honest AUC<b id="nbA">–</b>out-of-fold, no leakage</div></nav>
+<main><div id="err" class="note" hidden>Could not load the data files. Open this from GitHub Pages or a local web server.</div>
+<section id="t-ov"><h2>Hospital Tender Fraud Risk Monitoring</h2><p class="mu sm">Kaggle Hospital Tenders data, 2012 to 2018. Master's thesis project rebuilt with SQL, Python and GitHub.</p>
+<div class="grid kpi" id="kpi"></div><div class="grid">
+<div class="card"><h3>Test hospitals by risk band</h3><div class="cv"><canvas id="c1"></canvas></div></div>
+<div class="card"><h3>Top fraud drivers (Random Forest SHAP)</h3><div class="cv"><canvas id="c2"></canvas></div></div>
+<div class="card"><h3>Fraud rate by band (training, out-of-fold)</h3><div class="cv"><canvas id="c3"></canvas></div></div>
+<div class="card"><h3>Highest-risk test hospitals</h3><div class="tb" id="q"></div></div></div>
+<div class="note"><b>What this is not.</b> The data has five summary statistics per hospital: no dates, suppliers or tender descriptions. Test labels are hidden, so test-set alerts cannot be verified. A High band is a reason to review, not proof of fraud.</div></section>
 
-<section class="pane"><h2>Check a hospital</h2><div class="g"><div>
-<label>Tender count<input id="i0" type="number" min="1" value="1185"></label><label>Std. deviation<input id="i1" type="number" min="0.01" step="any" value="5.6"></label>
-<label>Median<input id="i2" type="number" min="0.01" step="any" value="3"></label><label>Mean<input id="i3" type="number" min="0.01" step="any" value="4.8"></label>
-<label>Skewness<input id="i4" type="number" step="any" value="3.2"></label><p class="sm mu">Defaults: a typical hospital in the training data.</p></div>
-<div aria-live="polite"><span class="big" id="sc">–</span><span class="badge" id="bd">–</span><p class="sm" id="ex"></p><div id="al" role="alert"></div><h3 style="margin-top:10px">What moved the score</h3><div id="ct"></div><p class="sm mu">Log-odds. Mean and median are linked, so read them as a pair.</p></div></div></section>
+<section id="t-eda" hidden><h2>Exploratory data analysis</h2><p class="mu sm">5,092 labelled hospitals, 99 fraud (1.94%), no missing values or duplicate ids.</p>
+<div class="seg" id="fs"></div><div class="grid"><div class="card"><h3>Fraud rate by quintile</h3><div class="cv"><canvas id="e1"></canvas></div></div>
+<div class="card"><h3>Correlation with fraud</h3><div class="cv"><canvas id="e2"></canvas></div></div>
+<div class="card"><h3>Std. deviation vs tender count (log scales)</h3><div class="cv"><canvas id="e3"></canvas></div></div>
+<div class="card"><h3>Median value by class</h3><div class="tb" id="med"></div><p class="sm mu">Fraud hospitals run more tenders and show higher spread and skew. The mean and median columns matter too, though their Pearson correlation is low because of extreme values.</p></div></div></section>
 
-<section class="pane"><h2>Batch alerts</h2><p class="sm mu">Paste CSV rows or choose a file with the columns id, obs_count, std, median, mean, skew (for example test.csv). Scoring happens in your browser and nothing is uploaded.</p>
-<input type="file" id="f" accept=".csv,text/csv" aria-label="Choose CSV file"><textarea id="ta" aria-label="CSV text"></textarea><p><button class="act" id="go">Score and raise alerts</button></p><div id="bo"></div></section>
+<section id="t-mod" hidden><h2>Model results</h2><p class="mu sm">Scores here use SMOTE inside each training fold, scored on untouched folds.</p>
+<div class="grid"><div class="card"><h3>Thesis vs leakage-free AUC</h3><div class="cv"><canvas id="m1"></canvas></div><p class="sm mu">The thesis applied SMOTE before cross-validation, which inflates scores.</p></div>
+<div class="card"><h3>ROC curve (out-of-fold)</h3><div class="cv"><canvas id="m2"></canvas></div></div>
+<div class="card"><h3>Choose an alert threshold</h3><label>Flag the top <b id="tp">5</b>% of risk scores<input id="sl" type="range" min="1" max="40" value="5"></label><div id="th"></div></div>
+<div class="card"><h3>Risk bands</h3><div class="tb" id="bn"></div></div></div></section>
 
-<section class="pane"><h2>How reliable are the bands?</h2><p class="sm mu">Each hospital scored by a model that never saw it (5-fold, SMOTE inside the training folds only).</p><div class="tb" id="bands"></div></section>
+<section id="t-xai" hidden><h2>Explainable AI (SHAP)</h2><p class="mu sm">Why the model flags hospitals. Random Forest SHAP values on a sample of 400 training hospitals.</p>
+<div class="grid"><div class="card"><h3>Global importance (mean |SHAP|)</h3><div class="cv"><canvas id="x1"></canvas></div><p class="sm mu">The linear model splits one signal across mean and median (they are correlated and push in opposite directions), so its mean and median bars look inflated. Trust the Random Forest ranking more.</p></div>
+<div class="card"><h3>SHAP summary</h3><div class="cv"><canvas id="x2"></canvas></div><p class="sm mu">Each dot is a hospital. Red is a high feature value, blue is low. Right of zero pushes toward fraud.</p></div>
+<div class="card"><h3>Dependence plot</h3><div class="seg" id="xs"></div><div class="cv"><canvas id="x3"></canvas></div></div>
+<div class="card"><h3>Explain one hospital</h3><select id="xh" aria-label="Hospital"></select><div class="cv"><canvas id="x4"></canvas></div><p class="sm mu" id="xt"></p></div></div></section>
 
-<section class="g"><div class="pane"><h2>Thesis vs leakage-free AUC</h2><p class="sm mu">The thesis applied SMOTE before cross-validation, which inflates scores. Leakage-free numbers apply it inside each training fold.</p><div class="tb" id="cmp"></div></div>
-<div class="pane"><h2>What drives the Random Forest</h2><p class="sm mu">Mean absolute SHAP value per feature.</p><div id="shap"></div></div></section>
+<section id="t-net" hidden><h2>Network analysis</h2><p class="mu sm">A similarity network of hospitals, not suppliers: two hospitals are linked when their five summary statistics are close (3 nearest neighbours each). The sample holds all 99 fraud hospitals and 201 others, so fraud is over-represented here.</p>
+<div class="grid kpi" id="nk"></div><div class="grid"><div class="card"><h3>Hospital similarity graph</h3><canvas id="ng" style="width:100%;height:420px"></canvas><p class="sm mu">Red: fraud. Blue: not flagged. Larger nodes have more links.</p></div>
+<div class="card"><h3>Most central hospitals</h3><div class="tb" id="nt"></div></div></div><div class="note" id="nn"></div></section>
 
-<section class="pane"><h2>Highest-risk hospitals in the test set</h2><p class="sm mu">The test labels are hidden, so this ranking cannot be verified. Scores near 1.0 are saturated; use the band, not the decimals.</p><div class="tb" id="top"></div></section>
-<div class="note sm"><b>Limits.</b> Five summary statistics, no dates or suppliers, and only 99 fraud cases, so model differences of about 0.01 AUC are noise. A High band means about ten times the average fraud rate, and most High hospitals are still not labelled fraud. It is a reason to review, not proof.</div>
-<footer>Page built from docs/data.json, produced by the notebook pipeline in this repository.</footer></div>
-<script src="app.js"></script></body></html>
+<section id="t-live" hidden><h2>Live monitor (simulation)</h2><p class="mu sm">Replays the 2,546 unlabelled test hospitals as if they were arriving one by one. Each is scored in your browser. The data is historical.</p>
+<div class="seg"><button class="act" id="pl">Start</button><select id="sp" aria-label="Speed" style="width:auto"><option value="1500">Slow</option><option value="600" selected>Normal</option><option value="150">Fast</option></select><button id="rs">Reset</button></div>
+<div class="grid kpi" id="lk"></div><div class="grid"><div class="card"><h3>Latest risk scores</h3><div class="cv"><canvas id="l1"></canvas></div></div><div class="card"><h3>Alert feed</h3><div class="feed" id="fd"><div class="mu">Press Start.</div></div></div></div></section>
+
+<section id="t-chk" hidden><h2>Check hospitals</h2><div class="grid"><div class="card"><h3>One hospital</h3>
+<label>Tender count<input id="i0" type="number" min="1" value="1185"></label><label>Std. deviation<input id="i1" type="number" min="0.01" step="any" value="5.6"></label><label>Median<input id="i2" type="number" min="0.01" step="any" value="3"></label><label>Mean<input id="i3" type="number" min="0.01" step="any" value="4.8"></label><label>Skewness<input id="i4" type="number" step="any" value="3.2"></label>
+<div><b style="font-size:1.8rem" id="sc">–</b> <span class="pill" id="bd">–</span></div><p class="sm" id="ex"></p><div id="al"></div><div id="ct"></div></div>
+<div class="card"><h3>Batch alerts from CSV</h3><p class="sm mu">Columns: id, obs_count, std, median, mean, skew. Nothing is uploaded.</p><input type="file" id="f" accept=".csv"><textarea id="ta" aria-label="CSV text"></textarea><p><button class="act" id="go">Score and raise alerts</button></p><div id="bo"></div></div></div></section>
+</main><script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script><script src="app.js"></script></body></html>
