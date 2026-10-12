@@ -1,0 +1,9 @@
+Model,Thesis AUC (SMOTE before CV),Leakage-free AUC (3 features),Leakage-free AUC (5 features)
+Random Forest,0.9892,0.895,0.89
+XGBoost,0.9853,0.895,0.896
+LightGBM,0.9845,0.902,0.903
+Gradient Boosting,0.9696,0.902,0.907
+KNN,0.929,0.783,0.785
+Logistic Regression,0.9127,0.894,0.898
+MLP,0.8613,0.892,0.889
+SVM,0.8052,0.888,0.898

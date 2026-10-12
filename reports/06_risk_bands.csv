@@ -1,0 +1,4 @@
+band,hospitals,fraud_cases,fraud_pct,pct_of_all_fraud
+High,255,50,19.61,50.5
+Medium,764,30,3.93,30.3
+Low,4073,19,0.47,19.2

@@ -1,0 +1,9 @@
+Model,AUC,AUC_sd,AvgPrecision
+Gradient Boosting,0.907,0.019,0.205
+LightGBM,0.903,0.016,0.254
+Logistic Regression,0.898,0.012,0.259
+SVM,0.898,0.024,0.174
+XGBoost,0.896,0.022,0.225
+Random Forest,0.89,0.028,0.189
+MLP,0.889,0.018,0.193
+KNN,0.785,0.043,0.096
