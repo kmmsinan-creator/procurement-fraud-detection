@@ -1,0 +1,382 @@
+{
+  "features": [
+    "obs_count",
+    "std",
+    "median",
+    "mean",
+    "skew"
+  ],
+  "weights": [
+    0.00031848188197058653,
+    -0.06502437043981829,
+    -1.4170772199570867,
+    1.0612330057337869,
+    0.08204939384132498
+  ],
+  "bias": -2.995297113192494,
+  "cutoffs": {
+    "high": 0.8281003342806418,
+    "medium": 0.42918563322551856
+  },
+  "feature_info": {
+    "obs_count": {
+      "mean": 1988.7501963864886,
+      "min": 101.0,
+      "max": 26765.0
+    },
+    "std": {
+      "mean": 7.890429669694885,
+      "min": 0.318351549226447,
+      "max": 717.316062369534
+    },
+    "median": {
+      "mean": 3.2154359780047135,
+      "min": 1.0,
+      "max": 379.0
+    },
+    "mean": {
+      "mean": 5.4546586656750975,
+      "min": 1.11320754716981,
+      "max": 587.5
+    },
+    "skew": {
+      "mean": 4.753416189941751,
+      "min": -0.0461715796410185,
+      "max": 35.6457283609724
+    }
+  },
+  "oof_auc": 0.897,
+  "base_rate": 0.0194,
+  "bands": [
+    {
+      "band": "High",
+      "hospitals": 255,
+      "fraud_cases": 50,
+      "fraud_pct": 19.61,
+      "pct_of_all_fraud": 50.5
+    },
+    {
+      "band": "Medium",
+      "hospitals": 764,
+      "fraud_cases": 30,
+      "fraud_pct": 3.93,
+      "pct_of_all_fraud": 30.3
+    },
+    {
+      "band": "Low",
+      "hospitals": 4073,
+      "fraud_cases": 19,
+      "fraud_pct": 0.47,
+      "pct_of_all_fraud": 19.2
+    }
+  ],
+  "top_test": [
+    {
+      "id": 6965,
+      "obs_count": 535,
+      "std": 89.5,
+      "median": 4.0,
+      "mean": 41.2,
+      "skew": 2.3,
+      "score": 1.0,
+      "band": "High"
+    },
+    {
+      "id": 7586,
+      "obs_count": 124,
+      "std": 25.0,
+      "median": 1.0,
+      "mean": 15.5,
+      "skew": 1.5,
+      "score": 1.0,
+      "band": "High"
+    },
+    {
+      "id": 5095,
+      "obs_count": 22968,
+      "std": 54.8,
+      "median": 9.0,
+      "mean": 19.0,
+      "skew": 26.2,
+      "score": 1.0,
+      "band": "High"
+    },
+    {
+      "id": 5636,
+      "obs_count": 2882,
+      "std": 26.7,
+      "median": 4.0,
+      "mean": 16.3,
+      "skew": 3.0,
+      "score": 1.0,
+      "band": "High"
+    },
+    {
+      "id": 5093,
+      "obs_count": 41305,
+      "std": 552.6,
+      "median": 8.0,
+      "mean": 39.6,
+      "skew": 32.1,
+      "score": 0.999,
+      "band": "High"
+    },
+    {
+      "id": 5099,
+      "obs_count": 16247,
+      "std": 23.8,
+      "median": 7.0,
+      "mean": 15.4,
+      "skew": 3.7,
+      "score": 0.999,
+      "band": "High"
+    },
+    {
+      "id": 5097,
+      "obs_count": 17803,
+      "std": 66.6,
+      "median": 8.0,
+      "mean": 16.8,
+      "skew": 28.1,
+      "score": 0.999,
+      "band": "High"
+    },
+    {
+      "id": 5841,
+      "obs_count": 2203,
+      "std": 26.1,
+      "median": 5.0,
+      "mean": 16.8,
+      "skew": 2.6,
+      "score": 0.999,
+      "band": "High"
+    },
+    {
+      "id": 5096,
+      "obs_count": 21161,
+      "std": 111.0,
+      "median": 8.0,
+      "mean": 17.6,
+      "skew": 33.3,
+      "score": 0.999,
+      "band": "High"
+    },
+    {
+      "id": 5428,
+      "obs_count": 4015,
+      "std": 37.1,
+      "median": 5.0,
+      "mean": 16.3,
+      "skew": 5.3,
+      "score": 0.999,
+      "band": "High"
+    },
+    {
+      "id": 5321,
+      "obs_count": 5028,
+      "std": 25.1,
+      "median": 5.0,
+      "mean": 14.5,
+      "skew": 4.0,
+      "score": 0.996,
+      "band": "High"
+    },
+    {
+      "id": 6819,
+      "obs_count": 656,
+      "std": 26.1,
+      "median": 5.0,
+      "mean": 16.0,
+      "skew": 2.5,
+      "score": 0.996,
+      "band": "High"
+    },
+    {
+      "id": 5110,
+      "obs_count": 12526,
+      "std": 52.5,
+      "median": 6.0,
+      "mean": 13.4,
+      "skew": 26.4,
+      "score": 0.996,
+      "band": "High"
+    },
+    {
+      "id": 5094,
+      "obs_count": 28470,
+      "std": 23.0,
+      "median": 14.0,
+      "mean": 18.4,
+      "skew": 14.5,
+      "score": 0.996,
+      "band": "High"
+    },
+    {
+      "id": 5098,
+      "obs_count": 16728,
+      "std": 19.1,
+      "median": 7.0,
+      "mean": 13.0,
+      "skew": 5.6,
+      "score": 0.996,
+      "band": "High"
+    },
+    {
+      "id": 5380,
+      "obs_count": 4393,
+      "std": 22.0,
+      "median": 4.0,
+      "mean": 12.9,
+      "skew": 3.8,
+      "score": 0.995,
+      "band": "High"
+    },
+    {
+      "id": 5131,
+      "obs_count": 10120,
+      "std": 22.1,
+      "median": 4.0,
+      "mean": 11.1,
+      "skew": 4.6,
+      "score": 0.995,
+      "band": "High"
+    },
+    {
+      "id": 5153,
+      "obs_count": 8638,
+      "std": 23.5,
+      "median": 6.0,
+      "mean": 14.3,
+      "skew": 3.8,
+      "score": 0.995,
+      "band": "High"
+    },
+    {
+      "id": 5161,
+      "obs_count": 8317,
+      "std": 57.8,
+      "median": 5.0,
+      "mean": 13.9,
+      "skew": 19.6,
+      "score": 0.994,
+      "band": "High"
+    },
+    {
+      "id": 5413,
+      "obs_count": 4150,
+      "std": 22.7,
+      "median": 3.0,
+      "mean": 11.5,
+      "skew": 4.1,
+      "score": 0.994,
+      "band": "High"
+    },
+    {
+      "id": 6084,
+      "obs_count": 1680,
+      "std": 138.4,
+      "median": 1.0,
+      "mean": 16.2,
+      "skew": 10.1,
+      "score": 0.994,
+      "band": "High"
+    },
+    {
+      "id": 5104,
+      "obs_count": 13898,
+      "std": 26.3,
+      "median": 6.0,
+      "mean": 11.4,
+      "skew": 20.7,
+      "score": 0.994,
+      "band": "High"
+    },
+    {
+      "id": 6693,
+      "obs_count": 789,
+      "std": 26.2,
+      "median": 2.0,
+      "mean": 11.3,
+      "skew": 2.9,
+      "score": 0.993,
+      "band": "High"
+    },
+    {
+      "id": 5195,
+      "obs_count": 7000,
+      "std": 25.2,
+      "median": 7.0,
+      "mean": 15.8,
+      "skew": 3.5,
+      "score": 0.992,
+      "band": "High"
+    },
+    {
+      "id": 5100,
+      "obs_count": 15356,
+      "std": 17.9,
+      "median": 7.0,
+      "mean": 12.7,
+      "skew": 5.1,
+      "score": 0.991,
+      "band": "High"
+    }
+  ],
+  "thesis_vs_honest": [
+    {
+      "Model": "Random Forest",
+      "Thesis AUC (SMOTE before CV)": 0.9892,
+      "Leakage-free AUC (3 features)": 0.895,
+      "Leakage-free AUC (5 features)": 0.89
+    },
+    {
+      "Model": "XGBoost",
+      "Thesis AUC (SMOTE before CV)": 0.9853,
+      "Leakage-free AUC (3 features)": 0.895,
+      "Leakage-free AUC (5 features)": 0.896
+    },
+    {
+      "Model": "LightGBM",
+      "Thesis AUC (SMOTE before CV)": 0.9845,
+      "Leakage-free AUC (3 features)": 0.902,
+      "Leakage-free AUC (5 features)": 0.903
+    },
+    {
+      "Model": "Gradient Boosting",
+      "Thesis AUC (SMOTE before CV)": 0.9696,
+      "Leakage-free AUC (3 features)": 0.902,
+      "Leakage-free AUC (5 features)": 0.907
+    },
+    {
+      "Model": "KNN",
+      "Thesis AUC (SMOTE before CV)": 0.929,
+      "Leakage-free AUC (3 features)": 0.783,
+      "Leakage-free AUC (5 features)": 0.785
+    },
+    {
+      "Model": "Logistic Regression",
+      "Thesis AUC (SMOTE before CV)": 0.9127,
+      "Leakage-free AUC (3 features)": 0.894,
+      "Leakage-free AUC (5 features)": 0.898
+    },
+    {
+      "Model": "MLP",
+      "Thesis AUC (SMOTE before CV)": 0.8613,
+      "Leakage-free AUC (3 features)": 0.892,
+      "Leakage-free AUC (5 features)": 0.889
+    },
+    {
+      "Model": "SVM",
+      "Thesis AUC (SMOTE before CV)": 0.8052,
+      "Leakage-free AUC (3 features)": 0.888,
+      "Leakage-free AUC (5 features)": 0.898
+    }
+  ],
+  "shap_rf": {
+    "obs_count": 0.086,
+    "std": 0.16,
+    "median": 0.076,
+    "mean": 0.111,
+    "skew": 0.086
+  }
+}
